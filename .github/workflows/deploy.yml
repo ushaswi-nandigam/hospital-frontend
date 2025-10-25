@@ -3,7 +3,13 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main   # Trigger deployment on push to main
+      - main   # Trigger deployment on push to main branch
+
+# Required permissions for v4 deploy-pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build:
@@ -34,7 +40,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: hospital-frontend-build
-          path: dist   # Vite default output folder
+          path: dist   # Vite default build output folder
 
   deploy:
     name: Deploy to GitHub Pages
@@ -46,23 +52,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Download the build artifact
+      # 2. Download build artifact
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: hospital-frontend-build
           path: dist
 
-      # 3. Create gh-pages branch if it doesn't exist
-      - name: Create gh-pages branch if needed
-        run: |
-          git fetch origin gh-pages || git checkout --orphan gh-pages
-          git checkout -B gh-pages
-
-      # 4. Deploy to GitHub Pages
+      # 3. Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
         with:
-          branch: gh-pages
-          folder: dist
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          artifact_name: hospital-frontend-build
