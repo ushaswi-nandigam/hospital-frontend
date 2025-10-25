@@ -31,7 +31,7 @@ jobs:
 
       # 5. Upload build folder as artifact
       - name: Upload build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: hospital-frontend-build
           path: build
@@ -48,14 +48,14 @@ jobs:
 
       # 2. Download the build artifact
       - name: Download build artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: hospital-frontend-build
           path: build
 
       # 3. Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v3
+        uses: actions/deploy-pages@v4
         with:
           branch: gh-pages   # Branch to deploy to
           folder: build      # Folder to deploy
