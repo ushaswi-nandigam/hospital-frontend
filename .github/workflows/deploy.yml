@@ -1,38 +1,66 @@
-name: Deploy Frontend to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]   # change if your branch is master
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+    branches:
+      - main   # Deploy when you push to main branch
 
 jobs:
-  build-deploy:
+  build:
+    name: Build Project
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      # 1. Checkout the repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      # 2. Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: 20
 
+      # 3. Install dependencies
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
+      # 4. Build the project
       - name: Build project
         run: npm run build
 
-      - name: Upload Pages Artifact
-        uses: actions/upload-pages-artifact@v3   # <--- USE v3 (latest)
-
+      # 5. Upload build folder as artifact
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
         with:
-          path: ./dist   # use ./build for CRA
+          name: hospital-frontend-build
+          path: build
 
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: build   # Ensures build job completes first
+
+    steps:
+      # 1. Checkout the repository again
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Download the build artifact
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: hospital-frontend-build
+          path: build
+
+      # 3. Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v3   # <--- USE v3 (latest)
+        uses: actions/deploy-pages@v3
+        with:
+          branch: gh-pages   # Branch to deploy to
+          folder: build      # Folder to deploy
+
+      # 4. Ensure GitHub Pages is active
+      - name: Enable GitHub Pages
+        run: |
+          echo "Make sure GitHub Pages is enabled in your repo settings!"
