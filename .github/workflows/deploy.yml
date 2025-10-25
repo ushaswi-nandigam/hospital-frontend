@@ -2,7 +2,7 @@ name: Deploy Frontend to GitHub Pages
 
 on:
   push:
-    branches: [ main ]   # change if your repo uses 'master'
+    branches: [ main ]   # change if your branch is master
 
 permissions:
   contents: read
@@ -29,9 +29,10 @@ jobs:
         run: npm run build
 
       - name: Upload Pages Artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3   # <--- USE v3 (latest)
+
         with:
-          path: ./dist   # use ./build if CRA
+          path: ./dist   # use ./build for CRA
 
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v3   # <--- USE v3 (latest)
