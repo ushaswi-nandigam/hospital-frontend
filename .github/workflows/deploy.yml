@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main   # Deploy when you push to main branch
+      - main   # Trigger deployment on push to main
 
 jobs:
   build:
@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 4. Build the project
+      # 4. Build project
       - name: Build project
         run: npm run build
 
@@ -34,15 +34,15 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: hospital-frontend-build
-          path: build
+          path: dist   # Vite default output folder
 
   deploy:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
-    needs: build   # Ensures build job completes first
+    needs: build
 
     steps:
-      # 1. Checkout the repository again
+      # 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -51,16 +51,18 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: hospital-frontend-build
-          path: build
+          path: dist
 
-      # 3. Deploy to GitHub Pages
+      # 3. Create gh-pages branch if it doesn't exist
+      - name: Create gh-pages branch if needed
+        run: |
+          git fetch origin gh-pages || git checkout --orphan gh-pages
+          git checkout -B gh-pages
+
+      # 4. Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
         with:
-          branch: gh-pages   # Branch to deploy to
-          folder: build      # Folder to deploy
-
-      # 4. Ensure GitHub Pages is active
-      - name: Enable GitHub Pages
-        run: |
-          echo "Make sure GitHub Pages is enabled in your repo settings!"
+          branch: gh-pages
+          folder: dist
+          github-token: ${{ secrets.GITHUB_TOKEN }}
