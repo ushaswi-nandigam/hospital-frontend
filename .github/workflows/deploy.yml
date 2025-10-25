@@ -1,8 +1,8 @@
-name: Deploy Frontend
+name: Deploy Frontend to GitHub Pages
 
 on:
   push:
-    branches: [ main ]   # change if your branch is master
+    branches: [ main ]   # change if your repo uses 'master'
 
 permissions:
   contents: read
@@ -15,23 +15,23 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "18"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build project
         run: npm run build
 
-      - name: Upload artifact
+      - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: ./dist   # for VITE build (or ./build for CRA)
+          path: ./dist   # use ./build if CRA
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v2
